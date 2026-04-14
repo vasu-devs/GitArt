@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "isomorphic-git": "^1.37.5",
     "jszip": "^3.10.1",
     "memfs": "^4.57.1",
