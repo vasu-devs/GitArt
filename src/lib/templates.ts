@@ -1287,6 +1287,267 @@ function buildTrain(): number[] {
   return grid;
 }
 
+function buildPikachu(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    ".X.........X.",
+    ".X.........X.",
+    "XXXXXXXXXXXXX",
+    "X.XXXXXXXXX.X",
+    "XMXXXXXXXXXMX",
+    "XXXXX...XXXXX",
+    ".XXXXXXXXXXX.",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
+function buildAirplane(): number[] {
+  const grid = blankGrid();
+  for (let c = 5; c <= 47; c++) {
+    grid[c * DAYS + 3] = HIGH;
+  }
+  grid[43 * DAYS + 2] = HIGH;
+  grid[44 * DAYS + 2] = HIGH;
+  for (let c = 20; c <= 30; c++) {
+    grid[c * DAYS + 2] = HIGH;
+    grid[c * DAYS + 4] = HIGH;
+  }
+  grid[18 * DAYS + 2] = MID;
+  grid[19 * DAYS + 2] = HIGH;
+  grid[31 * DAYS + 2] = HIGH;
+  grid[32 * DAYS + 2] = MID;
+  grid[18 * DAYS + 4] = MID;
+  grid[19 * DAYS + 4] = HIGH;
+  grid[31 * DAYS + 4] = HIGH;
+  grid[32 * DAYS + 4] = MID;
+  for (let r = 0; r <= 6; r++) {
+    grid[6 * DAYS + r] = HIGH;
+  }
+  grid[7 * DAYS + 1] = HIGH;
+  grid[7 * DAYS + 5] = HIGH;
+  for (let c = 0; c <= 4; c++) {
+    grid[c * DAYS + 3] = c < 2 ? LOW : MID;
+  }
+  return grid;
+}
+
+function buildCupcake(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "....X....",
+    "..XLHLX..",
+    ".XXXXXXX.",
+    "XXXXXXXXX",
+    "MMMMMMMMM",
+    "MMMMMMMMM",
+    "XMMMMMMMX",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X" || ch === "H") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+      else if (ch === "L") grid[gc * DAYS + r] = LOW;
+    }
+  }
+  return grid;
+}
+
+function buildPencil(): number[] {
+  const grid = blankGrid();
+  for (let c = 4; c <= 6; c++) {
+    for (let r = 2; r <= 4; r++) {
+      grid[c * DAYS + r] = MID;
+    }
+  }
+  for (let r = 2; r <= 4; r++) {
+    grid[7 * DAYS + r] = HIGH;
+  }
+  for (let c = 8; c <= 42; c++) {
+    grid[c * DAYS + 2] = HIGH;
+    grid[c * DAYS + 3] = HIGH;
+    grid[c * DAYS + 4] = HIGH;
+  }
+  grid[43 * DAYS + 2] = HIGH;
+  grid[43 * DAYS + 3] = HIGH;
+  grid[43 * DAYS + 4] = HIGH;
+  grid[44 * DAYS + 2] = MID;
+  grid[44 * DAYS + 3] = HIGH;
+  grid[44 * DAYS + 4] = MID;
+  grid[45 * DAYS + 3] = LOW;
+  return grid;
+}
+
+function buildBrickWall(): number[] {
+  const grid = blankGrid();
+  for (let col = 0; col < WEEKS; col++) {
+    for (let row = 0; row < DAYS; row++) {
+      if (row === 0 || row === 3 || row === 6) {
+        grid[col * DAYS + row] = LOW;
+        continue;
+      }
+      const offset = row === 1 || row === 2 ? 0 : 2;
+      const colInBrick = (col + offset) % 5;
+      if (colInBrick === 4) {
+        grid[col * DAYS + row] = LOW;
+      } else {
+        grid[col * DAYS + row] = HIGH;
+      }
+    }
+  }
+  return grid;
+}
+
+function buildPadlock(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "..XXX..",
+    ".X...X.",
+    ".X...X.",
+    "XXXXXXX",
+    "XX.X.XX",
+    "XXXMXXX",
+    "XXXXXXX",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
+function buildTelescope(): number[] {
+  const grid = blankGrid();
+  for (let c = 5; c <= 9; c++) {
+    for (let r = 1; r <= 5; r++) {
+      grid[c * DAYS + r] = HIGH;
+    }
+  }
+  grid[5 * DAYS + 2] = MID;
+  grid[5 * DAYS + 3] = MID;
+  grid[5 * DAYS + 4] = MID;
+  for (let c = 10; c <= 28; c++) {
+    for (let r = 2; r <= 4; r++) {
+      grid[c * DAYS + r] = HIGH;
+    }
+  }
+  for (let c = 29; c <= 40; c++) {
+    grid[c * DAYS + 3] = HIGH;
+    if (c <= 35) {
+      grid[c * DAYS + 2] = HIGH;
+      grid[c * DAYS + 4] = HIGH;
+    } else {
+      grid[c * DAYS + 2] = MID;
+      grid[c * DAYS + 4] = MID;
+    }
+  }
+  for (let c = 41; c <= 43; c++) {
+    grid[c * DAYS + 3] = MID;
+  }
+  grid[44 * DAYS + 3] = LOW;
+  grid[49 * DAYS + 1] = MID;
+  grid[50 * DAYS + 0] = HIGH;
+  grid[51 * DAYS + 2] = MID;
+  return grid;
+}
+
+function buildSunglasses(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "..............",
+    ".XXX....XXX...",
+    "XMMMX..XMMMX..",
+    "XMMMXXXXMMMX..",
+    "XMMMX..XMMMX..",
+    ".XXX....XXX...",
+    "..............",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
+function buildSantaHat(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "...WWW...",
+    "..WHHHW..",
+    ".HHHHHHH.",
+    "HHHHHHHHH",
+    "WWWWWWWWW",
+    "WWWWWWWWW",
+    ".........",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "W") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "H") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
+function buildGiftBox(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "...XX....",
+    "..XXXX...",
+    "XXXXXXXXX",
+    "MMRXXXRMM",
+    "MMRXXXRMM",
+    "MMRXXXRMM",
+    "MMMMMMMMM",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X" || ch === "R") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
 function buildDragon(): number[] {
   const grid = blankGrid();
   const flames: Array<[number, number, number]> = [
@@ -2492,6 +2753,16 @@ export const TEMPLATE_LIBRARY: Template[] = [
   { id: "target", name: "Target", grid: buildTarget() },
   { id: "sailboat", name: "Sailboat", grid: buildSailboat() },
   { id: "cloud-cluster", name: "Cloud Cluster", grid: buildCloudCluster() },
+  { id: "pikachu", name: "Pikachu", grid: buildPikachu() },
+  { id: "airplane", name: "Airplane", grid: buildAirplane() },
+  { id: "cupcake", name: "Cupcake", grid: buildCupcake() },
+  { id: "pencil", name: "Pencil", grid: buildPencil() },
+  { id: "brick-wall", name: "Brick Wall", grid: buildBrickWall() },
+  { id: "padlock", name: "Padlock", grid: buildPadlock() },
+  { id: "telescope", name: "Telescope", grid: buildTelescope() },
+  { id: "sunglasses", name: "Sunglasses", grid: buildSunglasses() },
+  { id: "santa-hat", name: "Santa Hat", grid: buildSantaHat() },
+  { id: "gift-box", name: "Gift Box", grid: buildGiftBox() },
   { id: "stonks", name: "Stonks", grid: buildStonks() },
   { id: "nyan-trail", name: "Nyan Trail", grid: buildNyanTrail() },
   { id: "crewmate", name: "Crewmate", grid: buildCrewmate() },
