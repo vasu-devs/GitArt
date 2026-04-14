@@ -57,7 +57,11 @@ function MiniHeatmap({ grid }: { grid: number[] }) {
         <span
           key={i}
           className="rounded-[1px]"
-          style={{ backgroundColor: PREVIEW_COLORS[level] ?? PREVIEW_COLORS[0] }}
+          style={{
+            backgroundColor: `var(--level-${level}, ${
+              PREVIEW_COLORS[level] ?? PREVIEW_COLORS[0]
+            })`,
+          }}
         />
       ))}
     </div>

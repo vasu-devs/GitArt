@@ -877,31 +877,108 @@ export default function Home() {
           </aside>
         </div>
       ) : (
-        <main className="mx-auto w-full max-w-[1600px] px-6 py-10 lg:px-12">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 lg:w-full lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(260px,300px)_1fr] lg:overflow-hidden">
+          <aside className="hidden flex-col gap-3 border-r border-white/10 bg-zinc-950/40 p-4 lg:flex lg:overflow-hidden">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                Discover
+              </h2>
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-wider text-zinc-400">
+                Gallery
+              </span>
+            </div>
+
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur">
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400">
+                  <circle cx="12" cy="12" r="9" />
+                  <polyline points="12 7 12 12 15 14" />
+                </svg>
+                <h3 className="text-sm font-semibold text-zinc-100">
+                  Time Machine
+                </h3>
+              </div>
+              <p className="text-[11px] leading-snug text-zinc-500">
+                Target a specific year — 364 days from its first Sunday.
+              </p>
+              <CustomDropdown<number>
+                value={year}
+                onChange={(next) => setYear(next)}
+                ariaLabel="Target year"
+                options={AVAILABLE_YEARS.map((y) => ({
+                  label: `${y}${y === CURRENT_YEAR ? "  •  current" : ""}`,
+                  value: y,
+                }))}
+              />
+              <div className="rounded-md border border-white/5 bg-black/30 px-2 py-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
+                Anchor: {formatISODate(startDate)}
+              </div>
+            </section>
+
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur lg:flex-1 lg:min-h-0">
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-400">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 3v18M3 12h18" />
+                </svg>
+                <h3 className="text-sm font-semibold text-zinc-100">
+                  Color Theme
+                </h3>
+              </div>
+              <p className="text-[11px] leading-snug text-zinc-500">
+                Restyles preview tiles — exports render in GitHub&apos;s palette.
+              </p>
+              <div className="grid grid-cols-1 gap-2">
+                {(Object.values(THEMES) as Theme[]).map((t) => {
+                  const isActive = themeId === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => setThemeId(t.id)}
+                      className={`group flex items-center gap-3 rounded-xl border p-2 text-left transition ${
+                        isActive
+                          ? "border-white/60 bg-white/[0.08]"
+                          : "border-white/10 bg-white/[0.02] hover:border-white/30"
+                      }`}
+                      aria-pressed={isActive}
+                      title={t.label}
+                    >
+                      <div className="flex h-5 w-16 shrink-0 overflow-hidden rounded">
+                        {t.colors.map((c, i) => (
+                          <span
+                            key={i}
+                            className="flex-1"
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs font-medium tracking-wide text-zinc-200">
+                        {t.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-auto rounded-md border border-white/5 bg-black/30 px-2 py-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
+                Active · {theme.label}
+              </div>
+            </section>
+          </aside>
+
+          <main className="flex min-w-0 flex-col gap-5 px-6 py-8 lg:overflow-y-auto lg:px-10 lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden">
             <p className="text-xs text-zinc-500">
               Browse curated patterns. Use <span className="text-zinc-300">Edit in Studio</span> to tweak, or <span className="text-zinc-300">Quick Download</span> to ship as-is.
             </p>
-            <CustomDropdown<number>
-              value={year}
-              onChange={(next) => setYear(next)}
-              ariaLabel="Target year"
-              className="min-w-[10rem]"
-              options={AVAILABLE_YEARS.map((y) => ({
-                label: `Year · ${y}${y === CURRENT_YEAR ? " • now" : ""}`,
-                value: y,
-              }))}
+            <TemplateGallery
+              email={email}
+              year={year}
+              onEditInStudio={handleEditInStudio}
+              onEmailMissing={() =>
+                setEmailError("Please enter your GitHub email address.")
+              }
             />
-          </div>
-          <TemplateGallery
-            email={email}
-            year={year}
-            onEditInStudio={handleEditInStudio}
-            onEmailMissing={() =>
-              setEmailError("Please enter your GitHub email address.")
-            }
-          />
-        </main>
+          </main>
+        </div>
       )}
 
       {tab === "studio" && (
