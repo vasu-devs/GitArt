@@ -24,6 +24,7 @@ import {
   DEFAULT_IMAGE_OPTIONS,
   type ImageFit,
 } from "@/lib/imageProcessor";
+import { exportGrid, type ExportFormat } from "@/lib/gridExporter";
 import TemplateGallery from "@/components/TemplateGallery";
 import CustomDropdown from "@/components/CustomDropdown";
 
@@ -200,6 +201,21 @@ export default function Home() {
   );
 
   const handleClear = () => setGrid(Array(TOTAL_CELLS).fill(0));
+
+  const [isExporting, setIsExporting] = useState<ExportFormat | null>(null);
+  const handleExport = async (format: ExportFormat) => {
+    setIsExporting(format);
+    try {
+      await exportGrid({
+        grid,
+        themeColors: theme.colors,
+        filename: `gitart-${year}-${themeId}.${format}`,
+        format,
+      });
+    } finally {
+      setIsExporting(null);
+    }
+  };
 
   const handleRenderText = () => {
     const value = textInput.trim();
@@ -1131,16 +1147,33 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="mt-4 flex items-center justify-end gap-2 pr-1 text-[10px] text-zinc-500">
-                <span>Less</span>
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <span
-                    key={i}
-                    className="h-2.5 w-2.5 rounded-sm border border-black/40"
-                    style={{ backgroundColor: `var(--level-${i})` }}
-                  />
-                ))}
-                <span>More</span>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pr-1 text-[10px] text-zinc-500">
+                <div className="flex items-center gap-2">
+                  <span className="uppercase tracking-wider">Export</span>
+                  {(["svg", "png", "jpeg"] as const).map((fmt) => (
+                    <button
+                      key={fmt}
+                      type="button"
+                      onClick={() => handleExport(fmt)}
+                      disabled={isExporting !== null}
+                      title={`Download canvas as ${fmt.toUpperCase()}`}
+                      className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-zinc-300 transition hover:border-emerald-400/50 hover:bg-emerald-500/10 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isExporting === fmt ? "…" : fmt}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>Less</span>
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <span
+                      key={i}
+                      className="h-2.5 w-2.5 rounded-sm border border-black/40"
+                      style={{ backgroundColor: `var(--level-${i})` }}
+                    />
+                  ))}
+                  <span>More</span>
+                </div>
               </div>
             </div>
 
