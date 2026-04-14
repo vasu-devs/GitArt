@@ -1287,6 +1287,281 @@ function buildTrain(): number[] {
   return grid;
 }
 
+function buildSunset(): number[] {
+  const grid = blankGrid();
+  for (let col = 0; col < WEEKS; col++) {
+    const p = col / WEEKS;
+    grid[col * DAYS + 0] = p < 0.5 ? 1 : LOW;
+    grid[col * DAYS + 1] = p < 0.7 ? LOW : MID;
+    grid[col * DAYS + 2] = p < 0.8 ? MID : HIGH;
+    grid[col * DAYS + 3] = HIGH;
+    grid[col * DAYS + 4] = p < 0.8 ? MID : HIGH;
+    grid[col * DAYS + 5] = p < 0.6 ? LOW : MID;
+    grid[col * DAYS + 6] = p < 0.3 ? 1 : LOW;
+  }
+  const sunCenter = 41;
+  for (let c = sunCenter - 3; c <= sunCenter + 3; c++) {
+    for (let r = 1; r <= 3; r++) {
+      const dc = Math.abs(c - sunCenter);
+      const dr = Math.abs(r - 2);
+      if (dc + dr <= 3 && c >= 0 && c < WEEKS) {
+        grid[c * DAYS + r] = HIGH;
+      }
+    }
+  }
+  return grid;
+}
+
+function buildStarryNight(): number[] {
+  const grid = blankGrid();
+  const stars: Array<[number, number, number]> = [
+    [3, 1, HIGH], [7, 3, MID], [10, 0, LOW], [13, 5, HIGH],
+    [16, 2, MID], [19, 6, LOW], [22, 1, HIGH], [25, 4, MID],
+    [28, 0, HIGH], [31, 3, LOW], [34, 6, MID], [37, 2, HIGH],
+    [40, 4, LOW], [43, 0, MID], [46, 5, HIGH], [49, 3, MID],
+    [2, 4, LOW], [6, 6, MID], [11, 2, LOW], [15, 0, HIGH],
+    [20, 4, LOW], [23, 6, HIGH], [26, 2, LOW], [29, 5, HIGH],
+    [32, 1, MID], [35, 3, LOW], [38, 6, HIGH], [41, 1, LOW],
+    [44, 3, MID], [47, 6, LOW], [51, 1, HIGH],
+  ];
+  for (const [c, r, v] of stars) {
+    if (c < WEEKS) grid[c * DAYS + r] = v;
+  }
+  const moon: Array<[number, number, number]> = [
+    [3, 0, HIGH], [4, 0, HIGH],
+    [2, 1, HIGH], [3, 1, HIGH], [4, 1, MID],
+    [2, 2, HIGH], [3, 2, HIGH], [4, 2, MID],
+    [3, 3, HIGH], [4, 3, HIGH],
+  ];
+  for (const [c, r, v] of moon) {
+    grid[c * DAYS + r] = v;
+  }
+  return grid;
+}
+
+function buildCactusDesert(): number[] {
+  const grid = blankGrid();
+  const c1 = 14;
+  for (let r = 1; r <= 5; r++) grid[c1 * DAYS + r] = HIGH;
+  grid[(c1 + 1) * DAYS + 2] = HIGH;
+  grid[(c1 + 1) * DAYS + 3] = HIGH;
+  grid[(c1 + 2) * DAYS + 2] = HIGH;
+  const c2 = 34;
+  for (let r = 0; r <= 5; r++) grid[c2 * DAYS + r] = HIGH;
+  grid[(c2 - 1) * DAYS + 2] = HIGH;
+  grid[(c2 - 1) * DAYS + 3] = HIGH;
+  grid[(c2 - 2) * DAYS + 2] = HIGH;
+  grid[(c2 + 1) * DAYS + 3] = HIGH;
+  grid[(c2 + 2) * DAYS + 3] = HIGH;
+  grid[5 * DAYS + 0] = MID;
+  grid[5 * DAYS + 1] = HIGH;
+  grid[6 * DAYS + 0] = HIGH;
+  grid[6 * DAYS + 1] = HIGH;
+  for (let col = 0; col < WEEKS; col++) {
+    if (grid[col * DAYS + 6] === 0) grid[col * DAYS + 6] = LOW;
+  }
+  for (let col = 22; col <= 30; col++) {
+    if (grid[col * DAYS + 5] === 0) grid[col * DAYS + 5] = LOW;
+  }
+  for (let col = 44; col <= 50; col++) {
+    if (grid[col * DAYS + 5] === 0) grid[col * DAYS + 5] = LOW;
+  }
+  return grid;
+}
+
+function buildMasterSword(): number[] {
+  const grid = blankGrid();
+  grid[11 * DAYS + 3] = HIGH;
+  grid[12 * DAYS + 3] = HIGH;
+  for (let c = 13; c <= 14; c++) grid[c * DAYS + 3] = MID;
+  for (let r = 1; r <= 5; r++) {
+    grid[15 * DAYS + r] = HIGH;
+    grid[16 * DAYS + r] = HIGH;
+  }
+  grid[15 * DAYS + 0] = MID;
+  grid[15 * DAYS + 6] = MID;
+  for (let c = 17; c <= 42; c++) {
+    grid[c * DAYS + 2] = MID;
+    grid[c * DAYS + 3] = HIGH;
+    grid[c * DAYS + 4] = MID;
+  }
+  grid[43 * DAYS + 2] = LOW;
+  grid[43 * DAYS + 3] = HIGH;
+  grid[43 * DAYS + 4] = LOW;
+  grid[44 * DAYS + 3] = HIGH;
+  grid[45 * DAYS + 3] = MID;
+  return grid;
+}
+
+function buildSnowflakes(): number[] {
+  const grid = blankGrid();
+  const flake = [
+    "...X...",
+    "X..X..X",
+    ".X.X.X.",
+    "XXXXXXX",
+    ".X.X.X.",
+    "X..X..X",
+    "...X...",
+  ];
+  const positions = [6, 22, 38];
+  for (const start of positions) {
+    for (let r = 0; r < flake.length; r++) {
+      for (let c = 0; c < flake[r].length; c++) {
+        if (flake[r][c] === "X") {
+          const gc = start + c;
+          if (gc < WEEKS) grid[gc * DAYS + r] = HIGH;
+        }
+      }
+    }
+  }
+  const dots: Array<[number, number]> = [
+    [2, 2], [4, 5], [14, 0], [17, 4], [29, 1], [33, 5],
+    [45, 3], [48, 6], [51, 0], [0, 4], [50, 4],
+  ];
+  for (const [c, r] of dots) {
+    if (grid[c * DAYS + r] === 0) grid[c * DAYS + r] = LOW;
+  }
+  return grid;
+}
+
+function buildPumpkin(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "...M...",
+    "..MMM..",
+    ".XXXXX.",
+    "X.XX.XX",
+    "XXXXXXX",
+    "X.XXX.X",
+    ".XXXXX.",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
+function buildMusicNotes(): number[] {
+  const grid = blankGrid();
+  const staffRows = [1, 3, 5];
+  for (const row of staffRows) {
+    for (let col = 0; col < WEEKS; col++) {
+      grid[col * DAYS + row] = 1;
+    }
+  }
+  const note = [
+    "....X",
+    "....X",
+    "....X",
+    "....X",
+    "..XXX",
+    "XXXXX",
+    "XXX..",
+  ];
+  const positions = [8, 22, 36];
+  for (const start of positions) {
+    for (let r = 0; r < note.length; r++) {
+      for (let c = 0; c < note[r].length; c++) {
+        if (note[r][c] === "X") {
+          const gc = start + c;
+          if (gc < WEEKS) grid[gc * DAYS + r] = HIGH;
+        }
+      }
+    }
+  }
+  return grid;
+}
+
+function buildBattery(): number[] {
+  const grid = blankGrid();
+  const startCol = 8;
+  const endCol = 40;
+  const topRow = 1;
+  const botRow = 5;
+  for (let c = startCol; c <= endCol; c++) {
+    grid[c * DAYS + topRow] = HIGH;
+    grid[c * DAYS + botRow] = HIGH;
+  }
+  for (let r = topRow; r <= botRow; r++) {
+    grid[startCol * DAYS + r] = HIGH;
+    grid[endCol * DAYS + r] = HIGH;
+  }
+  for (let r = 2; r <= 4; r++) {
+    grid[(endCol + 1) * DAYS + r] = HIGH;
+    grid[(endCol + 2) * DAYS + r] = HIGH;
+  }
+  const fillEnd = startCol + Math.floor((endCol - startCol) * 0.7);
+  for (let c = startCol + 1; c <= fillEnd; c++) {
+    for (let r = topRow + 1; r < botRow; r++) {
+      grid[c * DAYS + r] = MID;
+    }
+  }
+  const segments = [startCol + 3, startCol + 10, startCol + 17];
+  for (const seg of segments) {
+    for (let r = topRow + 1; r < botRow; r++) {
+      grid[seg * DAYS + r] = HIGH;
+    }
+  }
+  return grid;
+}
+
+function buildGhost(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "..XXXX..",
+    ".XXXXXX.",
+    "XXEEXEEX",
+    "XXEEXEEX",
+    "XXXXXXXX",
+    "XXXXXXXX",
+    "X.X.X.X.",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+    }
+  }
+  return grid;
+}
+
+function buildHourglass(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "XXXXXXX",
+    "XMMMMMX",
+    ".XMMMX.",
+    "..XMX..",
+    ".X...X.",
+    "X.....X",
+    "XXXXXXX",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
 function buildDeathStar(): number[] {
   const grid = blankGrid();
   const sprite = [
@@ -1334,6 +1609,16 @@ export const TEMPLATE_LIBRARY: Template[] = [
   { id: "creeper-face", name: "Creeper Face", grid: buildCreeperFace() },
   { id: "play-button", name: "Play Button", grid: buildPlayButton() },
   { id: "death-star", name: "Death Star", grid: buildDeathStar() },
+  { id: "master-sword", name: "Master Sword", grid: buildMasterSword() },
+  { id: "ghost", name: "Ghost", grid: buildGhost() },
+  { id: "pumpkin", name: "Pumpkin", grid: buildPumpkin() },
+  { id: "snowflakes", name: "Snowflakes", grid: buildSnowflakes() },
+  { id: "sunset", name: "Sunset", grid: buildSunset() },
+  { id: "starry-night", name: "Starry Night", grid: buildStarryNight() },
+  { id: "cactus-desert", name: "Cactus Desert", grid: buildCactusDesert() },
+  { id: "music-notes", name: "Music Notes", grid: buildMusicNotes() },
+  { id: "battery", name: "Battery", grid: buildBattery() },
+  { id: "hourglass", name: "Hourglass", grid: buildHourglass() },
   { id: "stonks", name: "Stonks", grid: buildStonks() },
   { id: "nyan-trail", name: "Nyan Trail", grid: buildNyanTrail() },
   { id: "crewmate", name: "Crewmate", grid: buildCrewmate() },
