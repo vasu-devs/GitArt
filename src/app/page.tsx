@@ -722,6 +722,29 @@ export default function Home() {
                   );
                 })}
               </div>
+              <div className="mt-4 p-3 rounded-xl border border-amber-500/20 bg-amber-500/10 flex items-start gap-3 backdrop-blur-sm">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mt-0.5 shrink-0 text-amber-400"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                <p className="text-xs text-amber-200/80 leading-relaxed">
+                  Themes are local aesthetic previews. GitHub securely strips
+                  all styling data from git commits. When pushed, your design
+                  will render in GitHub&apos;s default native colors.
+                </p>
+              </div>
             </section>
 
             <section className="mt-auto flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur">
