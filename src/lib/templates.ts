@@ -1287,6 +1287,289 @@ function buildTrain(): number[] {
   return grid;
 }
 
+function buildPawTrail(): number[] {
+  const grid = blankGrid();
+  const paw = [
+    ".X.X.",
+    "X.X.X",
+    ".....",
+    ".XXX.",
+    "XXXXX",
+    ".XXX.",
+    ".....",
+  ];
+  const positions = [7, 22, 37];
+  for (const start of positions) {
+    for (let r = 0; r < paw.length; r++) {
+      for (let c = 0; c < paw[r].length; c++) {
+        if (paw[r][c] === "X") {
+          const gc = start + c;
+          if (gc < WEEKS) grid[gc * DAYS + r] = HIGH;
+        }
+      }
+    }
+  }
+  return grid;
+}
+
+function buildPineForest(): number[] {
+  const grid = blankGrid();
+  const small = [
+    "..X..",
+    ".XXX.",
+    "XXXXX",
+    ".X.X.",
+    "..T..",
+  ];
+  const big = [
+    "...X...",
+    "..XXX..",
+    ".XXXXX.",
+    "XXXXXXX",
+    "...T...",
+  ];
+  const trees: Array<{ sprite: string[]; col: number; row: number }> = [
+    { sprite: small, col: 2, row: 1 },
+    { sprite: big, col: 10, row: 1 },
+    { sprite: small, col: 20, row: 1 },
+    { sprite: big, col: 27, row: 1 },
+    { sprite: small, col: 37, row: 1 },
+    { sprite: big, col: 44, row: 1 },
+  ];
+  for (const t of trees) {
+    for (let r = 0; r < t.sprite.length; r++) {
+      for (let c = 0; c < t.sprite[r].length; c++) {
+        const ch = t.sprite[r][c];
+        const gc = t.col + c;
+        const gr = t.row + r;
+        if (gc < 0 || gc >= WEEKS || gr < 0 || gr >= DAYS) continue;
+        if (ch === "X") grid[gc * DAYS + gr] = HIGH;
+        else if (ch === "T") grid[gc * DAYS + gr] = MID;
+      }
+    }
+  }
+  for (let col = 0; col < WEEKS; col++) {
+    if (grid[col * DAYS + 6] === 0) grid[col * DAYS + 6] = LOW;
+  }
+  return grid;
+}
+
+function buildHamburger(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    ".HHHHH.",
+    "HHHHHHH",
+    "MMMMMMM",
+    "LLLLLLL",
+    "MMMMMMM",
+    "HHHHHHH",
+    ".HHHHH.",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "H") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+      else if (ch === "L") grid[gc * DAYS + r] = LOW;
+    }
+  }
+  grid[(colOffset + 2) * DAYS + 1] = LOW;
+  grid[(colOffset + 4) * DAYS + 1] = LOW;
+  return grid;
+}
+
+function buildCastle(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "X...X.....X...X",
+    "X...X.....X...X",
+    "XXXXXXXXXXXXXXX",
+    "X.X.X.X.X.X.X.X",
+    "XXXXXXXXXXXXXXX",
+    "XX.XXXX.XXXXXXX",
+    "XXXXXXXXXXXXXXX",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      if (sprite[r][c] === "X") {
+        grid[(colOffset + c) * DAYS + r] = HIGH;
+      }
+    }
+  }
+  return grid;
+}
+
+function buildRobotFace(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "...M...",
+    "..XXX..",
+    "XXXXXXX",
+    "X.X.X.X",
+    "XXXXXXX",
+    "X.XXX.X",
+    "XXXXXXX",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
+function buildMustache(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "............",
+    ".XXX....XXX.",
+    "X..XX..XX..X",
+    "X...XXXX...X",
+    ".XXXXXXXXXX.",
+    "..XXXXXXXX..",
+    "............",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      if (sprite[r][c] === "X") {
+        const gc = colOffset + c;
+        if (gc >= 0 && gc < WEEKS) grid[gc * DAYS + r] = HIGH;
+      }
+    }
+  }
+  return grid;
+}
+
+function buildCrown(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "............",
+    ".X..X..X..X.",
+    ".X..X..X..X.",
+    "XXXXXXXXXXXX",
+    "XXMXXMXXMXXX",
+    "XXXXXXXXXXXX",
+    "............",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+    }
+  }
+  return grid;
+}
+
+function buildUmbrella(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "..XXXXXXX..",
+    ".XXXXXXXXX.",
+    "XXXXXXXXXXX",
+    "X.X.X.X.X.X",
+    ".....X.....",
+    "....XX.....",
+    "....X......",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      if (sprite[r][c] === "X") {
+        grid[(colOffset + c) * DAYS + r] = HIGH;
+      }
+    }
+  }
+  const drops: Array<[number, number]> = [
+    [1, 2], [3, 4], [5, 6], [48, 2], [50, 4], [45, 6],
+  ];
+  for (const [c, r] of drops) {
+    if (grid[c * DAYS + r] === 0) grid[c * DAYS + r] = LOW;
+  }
+  return grid;
+}
+
+function buildCircuitBoard(): number[] {
+  const grid = blankGrid();
+  const horizontal: Array<{ row: number; starts: number[]; length: number }> = [
+    { row: 1, starts: [0, 12, 25, 38], length: 10 },
+    { row: 3, starts: [5, 20, 35], length: 12 },
+    { row: 5, starts: [8, 22, 40], length: 10 },
+  ];
+  for (const trace of horizontal) {
+    for (const start of trace.starts) {
+      for (let i = 0; i < trace.length && start + i < WEEKS; i++) {
+        grid[(start + i) * DAYS + trace.row] = MID;
+      }
+    }
+  }
+  const vertical: Array<{ col: number; rows: [number, number] }> = [
+    { col: 10, rows: [1, 3] },
+    { col: 15, rows: [3, 5] },
+    { col: 25, rows: [1, 3] },
+    { col: 30, rows: [3, 5] },
+    { col: 40, rows: [1, 3] },
+    { col: 45, rows: [3, 5] },
+  ];
+  for (const v of vertical) {
+    const [r1, r2] = v.rows;
+    for (let r = r1; r <= r2; r++) {
+      grid[v.col * DAYS + r] = MID;
+    }
+  }
+  const nodes: Array<[number, number]> = [
+    [10, 1], [10, 3], [15, 3], [15, 5],
+    [25, 1], [25, 3], [30, 3], [30, 5],
+    [40, 1], [40, 3], [45, 3], [45, 5],
+  ];
+  for (const [c, r] of nodes) {
+    grid[c * DAYS + r] = HIGH;
+  }
+  return grid;
+}
+
+function buildFloppyDisk(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    ".XXXXXXX.",
+    "XXMMMMMXX",
+    "XXXXXXXXX",
+    "XXLLLLLXX",
+    "XMLMMLMMX",
+    "XXLLLLLXX",
+    "XXXXXXXXX",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "M") grid[gc * DAYS + r] = MID;
+      else if (ch === "L") grid[gc * DAYS + r] = LOW;
+    }
+  }
+  return grid;
+}
+
 function buildPizzaSlice(): number[] {
   const grid = blankGrid();
   const colStart = 14;
@@ -1902,6 +2185,16 @@ export const TEMPLATE_LIBRARY: Template[] = [
   { id: "balloons", name: "Balloons", grid: buildBalloons() },
   { id: "sun-rays", name: "Sun Rays", grid: buildSunRays() },
   { id: "leaf", name: "Leaf", grid: buildLeaf() },
+  { id: "paw-trail", name: "Paw Trail", grid: buildPawTrail() },
+  { id: "pine-forest", name: "Pine Forest", grid: buildPineForest() },
+  { id: "hamburger", name: "Hamburger", grid: buildHamburger() },
+  { id: "castle", name: "Castle", grid: buildCastle() },
+  { id: "robot-face", name: "Robot Face", grid: buildRobotFace() },
+  { id: "mustache", name: "Mustache", grid: buildMustache() },
+  { id: "crown", name: "Crown", grid: buildCrown() },
+  { id: "umbrella", name: "Umbrella", grid: buildUmbrella() },
+  { id: "circuit-board", name: "Circuit Board", grid: buildCircuitBoard() },
+  { id: "floppy-disk", name: "Floppy Disk", grid: buildFloppyDisk() },
   { id: "stonks", name: "Stonks", grid: buildStonks() },
   { id: "nyan-trail", name: "Nyan Trail", grid: buildNyanTrail() },
   { id: "crewmate", name: "Crewmate", grid: buildCrewmate() },
