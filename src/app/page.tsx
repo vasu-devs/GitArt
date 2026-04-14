@@ -439,8 +439,8 @@ export default function Home() {
       </header>
 
       {tab === "studio" ? (
-        <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 lg:grid-cols-[300px_1fr_300px]">
-          <aside className="hidden flex-col gap-5 border-r border-white/10 bg-zinc-950/40 p-6 lg:flex">
+        <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 lg:h-[calc(100vh-80px)] lg:grid-cols-[300px_1fr_300px] lg:overflow-hidden">
+          <aside className="hidden flex-col gap-3 border-r border-white/10 bg-zinc-950/40 p-4 lg:flex lg:overflow-hidden">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
                 Generators
@@ -450,7 +450,7 @@ export default function Home() {
               </span>
             </div>
 
-            <section className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur">
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur">
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-400">
                   <polyline points="4 7 4 4 20 4 20 7" />
@@ -461,9 +461,8 @@ export default function Home() {
                   Text Engine
                 </h3>
               </div>
-              <p className="text-[11px] leading-relaxed text-zinc-500">
-                Renders any text through a dynamic canvas engine. Tune the
-                font, size, spacing &amp; vertical shift.
+              <p className="text-[11px] leading-snug text-zinc-500">
+                Renders any text onto the canvas.
               </p>
               <input
                 type="text"
@@ -471,12 +470,9 @@ export default function Home() {
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Hello 2026"
                 maxLength={16}
-                className="rounded-lg border border-white/10 bg-zinc-950/60 px-3 py-2 text-sm tracking-wider text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-emerald-400/60"
+                className="rounded-lg border border-white/10 bg-zinc-950/60 px-3 py-1.5 text-sm tracking-wider text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-emerald-400/60"
               />
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
-                  Font Family
-                </label>
+              <div className="flex flex-col gap-1">
                 <CustomDropdown<string>
                   value={fontFamily}
                   onChange={(next) => setFontFamily(next)}
@@ -559,7 +555,7 @@ export default function Home() {
               </button>
             </section>
 
-            <section className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur">
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur">
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-sky-400">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -570,9 +566,8 @@ export default function Home() {
                   Image Upload
                 </h3>
               </div>
-              <p className="text-[11px] leading-relaxed text-zinc-500">
-                Drop any image — we downscale to 52×7 and map grayscale to
-                commit intensity.
+              <p className="text-[11px] leading-snug text-zinc-500">
+                Drop any image — downscaled to 52×7 grayscale.
               </p>
               <div
                 onDragEnter={handleDragEnter}
@@ -588,7 +583,7 @@ export default function Home() {
                     fileInputRef.current?.click();
                   }
                 }}
-                className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-3 py-6 text-center transition ${
+                className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed px-3 py-3 text-center transition ${
                   isDropping
                     ? "border-sky-400/80 bg-sky-400/10"
                     : "border-white/10 bg-black/20 hover:border-sky-400/40 hover:bg-sky-400/5"
@@ -623,7 +618,7 @@ export default function Home() {
             </section>
           </aside>
 
-          <main className="flex min-w-0 flex-col items-center justify-start gap-10 px-4 py-12 pb-40 lg:px-10">
+          <main className="flex min-w-0 flex-col items-center justify-between gap-6 px-4 py-8 pb-24 lg:overflow-hidden lg:px-10">
             <div className="flex w-full flex-col items-center gap-3">
               <div className="flex items-center gap-3">
                 <h1 className="text-center text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">
@@ -726,9 +721,55 @@ export default function Home() {
                 <span>More</span>
               </div>
             </div>
+
+            <div className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
+              <button
+                onClick={handleSelectEraser}
+                className={`group flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                  tool === "eraser"
+                    ? "border-white/40 bg-white/15 text-zinc-50"
+                    : "border-transparent text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
+                }`}
+                title="Eraser (Level 0)"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 20H7L3 16a2 2 0 0 1 0-2.8L13.2 3a2 2 0 0 1 2.8 0l5 5a2 2 0 0 1 0 2.8L11 20" />
+                  <line x1="18" y1="13" x2="9" y2="4" />
+                </svg>
+                Eraser
+              </button>
+              <span className="mx-1 h-6 w-px bg-white/10" />
+              {[0, 1, 2, 3, 4].map((level) => {
+                const isActive = tool === "brush" && brushLevel === level;
+                return (
+                  <button
+                    key={level}
+                    onClick={() => handleSelectBrush(level)}
+                    title={`Level ${level}`}
+                    className={`group relative flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                      isActive
+                        ? "border-white/70 bg-white/15 scale-105"
+                        : "border-transparent hover:bg-white/5"
+                    }`}
+                  >
+                    <span
+                      className="h-5 w-5 rounded-md border border-black/40 shadow-inner"
+                      style={{ backgroundColor: `var(--level-${level})` }}
+                    />
+                    <span
+                      className={`absolute -bottom-1 right-1 rounded-full bg-zinc-950 px-1 text-[8px] font-bold text-zinc-300 ${
+                        isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                      }`}
+                    >
+                      {level}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </main>
 
-          <aside className="hidden flex-col gap-5 border-l border-white/10 bg-zinc-950/40 p-6 lg:flex">
+          <aside className="hidden flex-col gap-3 border-l border-white/10 bg-zinc-950/40 p-4 lg:flex lg:overflow-hidden">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
                 Environment
@@ -738,7 +779,7 @@ export default function Home() {
               </span>
             </div>
 
-            <section className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur">
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur">
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400">
                   <circle cx="12" cy="12" r="9" />
@@ -748,9 +789,8 @@ export default function Home() {
                   Time Machine
                 </h3>
               </div>
-              <p className="text-[11px] leading-relaxed text-zinc-500">
-                Target a specific year. Commits map forward 364 days from the
-                first Sunday of {year}.
+              <p className="text-[11px] leading-snug text-zinc-500">
+                Target a specific year — 364 days from its first Sunday.
               </p>
               <CustomDropdown<number>
                 value={year}
@@ -766,7 +806,7 @@ export default function Home() {
               </div>
             </section>
 
-            <section className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur">
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur">
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-400">
                   <circle cx="12" cy="12" r="9" />
@@ -776,9 +816,8 @@ export default function Home() {
                   Color Theme
                 </h3>
               </div>
-              <p className="text-[11px] leading-relaxed text-zinc-500">
-                Preview your heatmap in curated palettes. Affects the canvas
-                only — commits remain identical.
+              <p className="text-[11px] leading-snug text-zinc-500">
+                Canvas preview only — commits stay the same.
               </p>
               <div className="grid grid-cols-1 gap-2">
                 {(Object.values(THEMES) as Theme[]).map((t) => {
@@ -836,17 +875,6 @@ export default function Home() {
               </div>
             </section>
 
-            <section className="mt-auto flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur">
-              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
-                Canvas
-              </h3>
-              <button
-                onClick={handleClear}
-                className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-sm text-zinc-300 transition hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300"
-              >
-                Clear Canvas
-              </button>
-            </section>
           </aside>
         </div>
       ) : (
@@ -879,53 +907,19 @@ export default function Home() {
 
       {tab === "studio" && (
         <div className="pointer-events-none fixed bottom-6 left-0 right-0 z-30 flex justify-center px-4">
-          <div className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.06] px-3 py-2 shadow-2xl shadow-black/60 backdrop-blur-xl">
-            <button
-              onClick={handleSelectEraser}
-              className={`group flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                tool === "eraser"
-                  ? "border-white/40 bg-white/15 text-zinc-50"
-                  : "border-transparent text-zinc-400 hover:bg-white/5 hover:text-zinc-100"
-              }`}
-              title="Eraser (Level 0)"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 20H7L3 16a2 2 0 0 1 0-2.8L13.2 3a2 2 0 0 1 2.8 0l5 5a2 2 0 0 1 0 2.8L11 20" />
-                <line x1="18" y1="13" x2="9" y2="4" />
-              </svg>
-              Eraser
-            </button>
-
-            <span className="mx-1 h-6 w-px bg-white/10" />
-
-            {[0, 1, 2, 3, 4].map((level) => {
-              const isActive = tool === "brush" && brushLevel === level;
-              return (
-                <button
-                  key={level}
-                  onClick={() => handleSelectBrush(level)}
-                  title={`Level ${level}`}
-                  className={`group relative flex h-9 w-9 items-center justify-center rounded-full border transition ${
-                    isActive
-                      ? "border-white/70 bg-white/15 scale-105"
-                      : "border-transparent hover:bg-white/5"
-                  }`}
-                >
-                  <span
-                    className="h-5 w-5 rounded-md border border-black/40 shadow-inner"
-                    style={{ backgroundColor: `var(--level-${level})` }}
-                  />
-                  <span
-                    className={`absolute -bottom-1 right-1 rounded-full bg-zinc-950 px-1 text-[8px] font-bold text-zinc-300 ${
-                      isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                    }`}
-                  >
-                    {level}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          <button
+            onClick={handleClear}
+            className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-white/15 bg-zinc-900/75 px-6 py-3 text-sm font-semibold text-zinc-300 shadow-2xl shadow-black/50 backdrop-blur-xl transition hover:border-red-400/50 hover:bg-red-500/15 hover:text-red-300"
+            title="Clear the canvas"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+            </svg>
+            Clear Canvas
+          </button>
         </div>
       )}
 
