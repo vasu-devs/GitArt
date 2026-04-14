@@ -865,20 +865,26 @@ export default function Home() {
                 Drop a shape or emoji onto the grid.
               </p>
 
-              <div className="grid grid-cols-[1fr_auto] gap-2">
+              <div className="flex items-stretch gap-2">
                 <input
                   type="text"
                   value={stampEmoji}
                   onChange={(e) => setStampEmoji(e.target.value)}
-                  placeholder="🌟 emoji"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && stampEmoji.trim()) {
+                      e.preventDefault();
+                      handleStampEmoji();
+                    }
+                  }}
+                  placeholder="Type an emoji…"
                   maxLength={4}
-                  className="rounded-lg border border-white/10 bg-zinc-950/60 px-3 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-fuchsia-400/60"
+                  className="min-w-0 flex-1 rounded-lg border border-white/10 bg-zinc-950/60 px-3 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-fuchsia-400/60"
                 />
                 <button
                   type="button"
                   onClick={handleStampEmoji}
                   disabled={!stampEmoji.trim()}
-                  className="rounded-lg border border-fuchsia-500/30 bg-fuchsia-500/10 px-3 text-[11px] font-medium text-fuchsia-200 transition hover:border-fuchsia-400/60 hover:bg-fuchsia-500/20 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.02] disabled:text-zinc-600"
+                  className="shrink-0 rounded-lg border border-fuchsia-500/40 bg-fuchsia-500/15 px-3.5 text-xs font-semibold text-fuchsia-100 transition hover:border-fuchsia-400/70 hover:bg-fuchsia-500/25 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/[0.03] disabled:text-zinc-400"
                 >
                   Stamp
                 </button>
