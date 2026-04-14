@@ -308,9 +308,9 @@ export default function Home() {
   return (
     <div
       style={themeStyle}
-      className="min-h-screen bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.08),_transparent_50%),_radial-gradient(ellipse_at_bottom,_rgba(59,130,246,0.05),_transparent_50%)] bg-zinc-950 text-zinc-100"
+      className="min-h-screen bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.08),_transparent_50%),_radial-gradient(ellipse_at_bottom,_rgba(59,130,246,0.05),_transparent_50%)] bg-zinc-950 text-zinc-100 lg:flex lg:h-screen lg:flex-col lg:overflow-hidden"
     >
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-zinc-950/70 backdrop-blur-xl lg:static lg:flex-shrink-0">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div className="flex items-center gap-3">
             <div
@@ -439,7 +439,7 @@ export default function Home() {
       </header>
 
       {tab === "studio" ? (
-        <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 lg:h-[calc(100vh-80px)] lg:grid-cols-[300px_1fr_300px] lg:overflow-hidden">
+        <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 lg:w-full lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(260px,300px)_1fr_minmax(260px,300px)] lg:overflow-hidden">
           <aside className="hidden flex-col gap-3 border-r border-white/10 bg-zinc-950/40 p-4 lg:flex lg:overflow-hidden">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
@@ -555,7 +555,7 @@ export default function Home() {
               </button>
             </section>
 
-            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur">
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur lg:flex-1 lg:min-h-0">
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-sky-400">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -583,7 +583,7 @@ export default function Home() {
                     fileInputRef.current?.click();
                   }
                 }}
-                className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed px-3 py-3 text-center transition ${
+                className={`flex min-h-[72px] cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed px-3 py-3 text-center transition lg:flex-1 ${
                   isDropping
                     ? "border-sky-400/80 bg-sky-400/10"
                     : "border-white/10 bg-black/20 hover:border-sky-400/40 hover:bg-sky-400/5"
@@ -806,7 +806,7 @@ export default function Home() {
               </div>
             </section>
 
-            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur">
+            <section className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur lg:flex-1 lg:min-h-0">
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-400">
                   <circle cx="12" cy="12" r="9" />
@@ -850,27 +850,26 @@ export default function Home() {
                   );
                 })}
               </div>
-              <div className="mt-4 p-3 rounded-xl border border-amber-500/20 bg-amber-500/10 flex items-start gap-3 backdrop-blur-sm">
+              <div className="mt-auto p-2 rounded-lg border border-amber-500/20 bg-amber-500/10 flex items-start gap-2 backdrop-blur-sm">
                 <svg
-                  width="16"
-                  height="16"
+                  width="12"
+                  height="12"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="mt-0.5 shrink-0 text-amber-400"
+                  className="mt-px shrink-0 text-amber-400"
                   aria-hidden="true"
                 >
                   <circle cx="12" cy="12" r="10" />
                   <line x1="12" y1="8" x2="12" y2="12" />
                   <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
-                <p className="text-xs text-amber-200/80 leading-relaxed">
-                  Themes are local aesthetic previews. GitHub securely strips
-                  all styling data from git commits. When pushed, your design
-                  will render in GitHub&apos;s default native colors.
+                <p className="text-[10px] text-amber-200/80 leading-snug">
+                  Themes preview locally — GitHub strips styling from commits
+                  and renders in its default palette.
                 </p>
               </div>
             </section>
