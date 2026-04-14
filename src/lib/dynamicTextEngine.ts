@@ -1,5 +1,6 @@
 const WEEKS = 52;
 const DAYS = 7;
+const SS = 10;
 
 export type TextAlign = "left" | "center" | "right";
 export type TextCase = "none" | "upper" | "lower";
@@ -42,24 +43,24 @@ export function renderDynamicTextToGrid(
     strokeWidth,
   } = options;
 
-  const canvas = document.createElement("canvas");
-  canvas.width = WEEKS;
-  canvas.height = DAYS;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return gridArray;
+  const source = document.createElement("canvas");
+  source.width = WEEKS * SS;
+  source.height = DAYS * SS;
+  const sctx = source.getContext("2d");
+  if (!sctx) return gridArray;
 
   const quotedFamily = /\s/.test(fontFamily) && !/["']/.test(fontFamily)
     ? `"${fontFamily}"`
     : fontFamily;
 
-  ctx.imageSmoothingEnabled = false;
-  ctx.clearRect(0, 0, WEEKS, DAYS);
-  ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${quotedFamily}`;
-  (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${letterSpacing}px`;
-  ctx.fillStyle = "black";
-  ctx.strokeStyle = "black";
-  ctx.textBaseline = "alphabetic";
-  ctx.lineJoin = "round";
+  sctx.clearRect(0, 0, source.width, source.height);
+  sctx.font = `${fontStyle} ${fontWeight} ${fontSize * SS}px ${quotedFamily}`;
+  (sctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = `${letterSpacing * SS}px`;
+  (sctx as CanvasRenderingContext2D & { textRendering: string }).textRendering = "geometricPrecision";
+  sctx.fillStyle = "black";
+  sctx.strokeStyle = "black";
+  sctx.textBaseline = "alphabetic";
+  sctx.lineJoin = "round";
 
   const transformed =
     textCase === "upper"
@@ -68,29 +69,41 @@ export function renderDynamicTextToGrid(
       ? text.toLowerCase()
       : text;
 
-  const metrics = ctx.measureText(transformed);
+  const metrics = sctx.measureText(transformed);
   let x: number;
   if (align === "left") {
     x = 0;
   } else if (align === "right") {
-    x = Math.round(WEEKS - metrics.width);
+    x = WEEKS * SS - metrics.width;
   } else {
-    x = Math.round((WEEKS - metrics.width) / 2);
+    x = (WEEKS * SS - metrics.width) / 2;
   }
-  x += xOffset;
+  x = Math.round(x + xOffset * SS);
+  const y = yOffset * SS;
 
   if (strokeWidth > 0) {
-    ctx.lineWidth = strokeWidth;
-    ctx.strokeText(transformed, x, yOffset);
+    sctx.lineWidth = strokeWidth * SS;
+    sctx.strokeText(transformed, x, y);
   }
-  ctx.fillText(transformed, x, yOffset);
+  sctx.fillText(transformed, x, y);
+
+  const target = document.createElement("canvas");
+  target.width = WEEKS;
+  target.height = DAYS;
+  const tctx = target.getContext("2d");
+  if (!tctx) return gridArray;
+
+  tctx.imageSmoothingEnabled = true;
+  tctx.imageSmoothingQuality = "high";
+  tctx.clearRect(0, 0, WEEKS, DAYS);
+  tctx.drawImage(source, 0, 0, WEEKS, DAYS);
 
   if (replace) {
     gridArray.fill(0);
   }
 
   const safeThreshold = Math.max(0, Math.min(254, alphaThreshold));
-  const data = ctx.getImageData(0, 0, WEEKS, DAYS).data;
+  const data = tctx.getImageData(0, 0, WEEKS, DAYS).data;
   for (let row = 0; row < DAYS; row++) {
     for (let col = 0; col < WEEKS; col++) {
       const i = (row * WEEKS + col) * 4;
