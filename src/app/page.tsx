@@ -15,6 +15,7 @@ import { CopyableCode, Modal } from "@/components/Modal";
 import { renderTextToGrid } from "@/lib/fontMatrix";
 import { processImageToGrid } from "@/lib/imageProcessor";
 import TemplateGallery from "@/components/TemplateGallery";
+import CustomDropdown from "@/components/CustomDropdown";
 
 const WEEKS = 52;
 const DAYS = 7;
@@ -662,23 +663,15 @@ export default function Home() {
                 Target a specific year. Commits map forward 364 days from the
                 first Sunday of {year}.
               </p>
-              <div className="relative">
-                <select
-                  value={year}
-                  onChange={(e) => setYear(Number(e.target.value))}
-                  className="w-full appearance-none rounded-lg border border-white/10 bg-zinc-950/60 px-3 py-2 pr-9 text-sm font-medium tracking-wide text-zinc-100 outline-none focus:border-amber-400/60"
-                >
-                  {AVAILABLE_YEARS.map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                      {y === CURRENT_YEAR ? "  •  current" : ""}
-                    </option>
-                  ))}
-                </select>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </div>
+              <CustomDropdown<number>
+                value={year}
+                onChange={(next) => setYear(next)}
+                ariaLabel="Target year"
+                options={AVAILABLE_YEARS.map((y) => ({
+                  label: `${y}${y === CURRENT_YEAR ? "  •  current" : ""}`,
+                  value: y,
+                }))}
+              />
               <div className="rounded-md border border-white/5 bg-black/30 px-2 py-1.5 text-[10px] uppercase tracking-wider text-zinc-500">
                 Anchor: {formatISODate(startDate)}
               </div>
@@ -750,24 +743,16 @@ export default function Home() {
             <p className="text-xs text-zinc-500">
               Browse curated patterns. Use <span className="text-zinc-300">Edit in Studio</span> to tweak, or <span className="text-zinc-300">Quick Download</span> to ship as-is.
             </p>
-            <div className="relative">
-              <select
-                value={year}
-                onChange={(e) => setYear(Number(e.target.value))}
-                className="appearance-none rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 pr-9 text-xs font-semibold tracking-wider text-zinc-100 outline-none focus:border-amber-400/60"
-                aria-label="Target year"
-              >
-                {AVAILABLE_YEARS.map((y) => (
-                  <option key={y} value={y}>
-                    Year · {y}
-                    {y === CURRENT_YEAR ? " • now" : ""}
-                  </option>
-                ))}
-              </select>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </div>
+            <CustomDropdown<number>
+              value={year}
+              onChange={(next) => setYear(next)}
+              ariaLabel="Target year"
+              className="min-w-[10rem]"
+              options={AVAILABLE_YEARS.map((y) => ({
+                label: `Year · ${y}${y === CURRENT_YEAR ? " • now" : ""}`,
+                value: y,
+              }))}
+            />
           </div>
           <TemplateGallery
             email={email}

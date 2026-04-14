@@ -392,7 +392,477 @@ function buildTetrisDrop(): number[] {
   return grid;
 }
 
+function buildStonks(): number[] {
+  const grid = blankGrid();
+  const points: Array<[number, number]> = [
+    [0, 6],
+    [5, 4],
+    [9, 5],
+    [14, 3],
+    [19, 4],
+    [24, 2],
+    [29, 3],
+    [34, 1],
+    [39, 2],
+    [44, 0],
+    [48, 0],
+  ];
+  for (let i = 0; i < points.length - 1; i++) {
+    const [c1, r1] = points[i];
+    const [c2, r2] = points[i + 1];
+    const dc = c2 - c1;
+    for (let c = c1; c <= c2; c++) {
+      const t = dc === 0 ? 0 : (c - c1) / dc;
+      const r = Math.round(r1 + (r2 - r1) * t);
+      if (c >= 0 && c < WEEKS && r >= 0 && r < DAYS) {
+        grid[c * DAYS + r] = HIGH;
+      }
+    }
+  }
+  const arrowhead: Array<[number, number]> = [
+    [49, 0],
+    [50, 0],
+    [51, 0],
+    [50, 1],
+    [51, 1],
+    [51, 2],
+  ];
+  for (const [c, r] of arrowhead) {
+    if (c >= 0 && c < WEEKS && r >= 0 && r < DAYS) {
+      grid[c * DAYS + r] = HIGH;
+    }
+  }
+  return grid;
+}
+
+function buildNyanTrail(): number[] {
+  const grid = blankGrid();
+  const bodyStartCol = 47;
+  const bodyEndCol = 51;
+  const bodyStartRow = 2;
+  const bodyEndRow = 5;
+  for (let c = bodyStartCol; c <= bodyEndCol; c++) {
+    for (let r = bodyStartRow; r <= bodyEndRow; r++) {
+      grid[c * DAYS + r] = HIGH;
+    }
+  }
+  const trail: Array<[number, number]> = [
+    [3, 1],
+    [4, 2],
+    [5, 3],
+  ];
+  for (const [row, intensity] of trail) {
+    for (let c = 0; c < bodyStartCol; c++) {
+      grid[c * DAYS + row] = intensity;
+    }
+  }
+  return grid;
+}
+
+function buildCrewmate(): number[] {
+  const body = [
+    ".XXXXX.",
+    "XXXXXXX",
+    "XXXXXXX",
+    "XXXXXXX",
+    "XXXXXXX",
+    "XX.XXXX",
+    "XX.XX.X",
+  ];
+  const grid = placeSprite(body, HIGH);
+  const visor = [
+    ".......",
+    ".......",
+    "..XXXX.",
+    "..XXXX.",
+    ".......",
+    ".......",
+    ".......",
+  ];
+  const colOffset = Math.floor((WEEKS - body[0].length) / 2);
+  const rowOffset = Math.max(0, Math.floor((DAYS - body.length) / 2));
+  for (let r = 0; r < visor.length; r++) {
+    for (let c = 0; c < visor[r].length; c++) {
+      if (visor[r][c] !== "X") continue;
+      const gc = colOffset + c;
+      const gr = rowOffset + r;
+      if (gc < 0 || gc >= WEEKS || gr < 0 || gr >= DAYS) continue;
+      grid[gc * DAYS + gr] = 1;
+    }
+  }
+  return grid;
+}
+
+function buildWordle(): number[] {
+  const grid = blankGrid();
+  const pattern = [
+    [2, 3, 2, 4, 3],
+    [3, 2, 4, 3, 2],
+    [2, 4, 3, 2, 3],
+    [4, 3, 2, 3, 4],
+    [3, 2, 3, 4, 2],
+    [4, 4, 4, 4, 4],
+  ];
+  const blockCols = 5;
+  const blockRows = 6;
+  const colOffset = Math.floor((WEEKS - blockCols) / 2);
+  const rowOffset = Math.floor((DAYS - blockRows) / 2);
+  for (let r = 0; r < blockRows; r++) {
+    for (let c = 0; c < blockCols; c++) {
+      const gc = colOffset + c;
+      const gr = rowOffset + r;
+      grid[gc * DAYS + gr] = pattern[r][c];
+    }
+  }
+  return grid;
+}
+
+function buildTheX(): number[] {
+  const sprite = [
+    "XX...XX",
+    "XXX.XXX",
+    ".XXXXX.",
+    "..XXX..",
+    ".XXXXX.",
+    "XXX.XXX",
+    "XX...XX",
+  ];
+  return placeSprite(sprite, HIGH);
+}
+
+function buildQRCode(): number[] {
+  const grid = blankGrid();
+  const marker = [
+    "XXXXXXX",
+    "X.....X",
+    "X.XXX.X",
+    "X.XXX.X",
+    "X.XXX.X",
+    "X.....X",
+    "XXXXXXX",
+  ];
+  stampSprite(grid, marker, 0, 0, HIGH);
+  stampSprite(grid, marker, 22, 0, HIGH);
+  stampSprite(grid, marker, 45, 0, HIGH);
+  let x = 0x1a2b3c4d;
+  const dataRanges: Array<[number, number]> = [
+    [8, 21],
+    [30, 44],
+  ];
+  for (const [start, end] of dataRanges) {
+    for (let col = start; col <= end; col++) {
+      for (let row = 0; row < DAYS; row++) {
+        x = (x * 1103515245 + 12345) & 0x7fffffff;
+        if ((x & 7) < 3) {
+          grid[col * DAYS + row] = HIGH;
+        }
+      }
+    }
+  }
+  const alignment: Array<[number, number]> = [
+    [20, 5],
+    [21, 5],
+    [20, 6],
+    [21, 6],
+  ];
+  for (const [c, r] of alignment) {
+    grid[c * DAYS + r] = HIGH;
+  }
+  return grid;
+}
+
+function buildMatrixRain(): number[] {
+  const grid = blankGrid();
+  let x = 0x9e3779b1;
+  for (let col = 0; col < WEEKS; col++) {
+    x = (x * 1664525 + 1013904223) & 0x7fffffff;
+    const headRow = (x % 11) - 3;
+    x = (x * 1664525 + 1013904223) & 0x7fffffff;
+    const trailLen = 3 + (x % 5);
+    for (let i = 0; i < trailLen; i++) {
+      const r = headRow - i;
+      if (r < 0 || r >= DAYS) continue;
+      let intensity: number;
+      if (i === 0) intensity = HIGH;
+      else if (i === 1) intensity = MID;
+      else if (i === 2) intensity = LOW;
+      else intensity = 1;
+      grid[col * DAYS + r] = intensity;
+    }
+  }
+  return grid;
+}
+
+function buildRocketLaunch(): number[] {
+  const grid = blankGrid();
+  const rocket = [
+    "...X...",
+    "..XXX..",
+    ".XXXXX.",
+    "..XXX..",
+    "..XXX..",
+    ".X...X.",
+    "..F.F..",
+  ];
+  const colOffset = Math.floor((WEEKS - rocket[0].length) / 2);
+  for (let r = 0; r < rocket.length; r++) {
+    for (let c = 0; c < rocket[r].length; c++) {
+      const ch = rocket[r][c];
+      const gc = colOffset + c;
+      const gr = r;
+      if (ch === "X") grid[gc * DAYS + gr] = HIGH;
+      else if (ch === "F") grid[gc * DAYS + gr] = MID;
+    }
+  }
+  const stars: Array<[number, number, number]> = [
+    [3, 1, LOW], [6, 4, 1], [9, 0, LOW], [11, 5, 1],
+    [14, 2, 1], [17, 6, LOW], [36, 1, LOW], [39, 5, 1],
+    [42, 0, LOW], [44, 3, 1], [47, 6, LOW], [49, 2, 1],
+    [1, 3, 1], [8, 2, LOW], [48, 4, LOW],
+  ];
+  for (const [c, r, v] of stars) {
+    if (grid[c * DAYS + r] === 0) grid[c * DAYS + r] = v;
+  }
+  return grid;
+}
+
+function buildBarcode(): number[] {
+  const grid = blankGrid();
+  const widths = [
+    3, 1, 2, 1, 4, 1, 2, 2, 1, 3, 1, 2, 3, 1,
+    2, 1, 3, 2, 1, 2, 3, 1, 4, 1, 2, 1, 3, 2, 1,
+  ];
+  let col = 2;
+  let bar = true;
+  for (const w of widths) {
+    if (col >= WEEKS - 2) break;
+    if (bar) {
+      for (let i = 0; i < w; i++) {
+        const gc = col + i;
+        if (gc >= WEEKS - 2) break;
+        for (let r = 0; r < DAYS - 1; r++) {
+          grid[gc * DAYS + r] = HIGH;
+        }
+      }
+    }
+    col += w;
+    bar = !bar;
+  }
+  const digits = [4, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46];
+  for (const d of digits) {
+    if (d < WEEKS) grid[d * DAYS + (DAYS - 1)] = LOW;
+  }
+  return grid;
+}
+
+function buildLightningBolt(): number[] {
+  const sprite = [
+    "...XX..",
+    "..XXX..",
+    ".XXX...",
+    "XXXXXX.",
+    "...XXX.",
+    "..XXX..",
+    ".XX....",
+  ];
+  return placeSprite(sprite, HIGH);
+}
+
+function buildMountainRange(): number[] {
+  const grid = blankGrid();
+  const peaks = [
+    0, 1, 2, 3, 4, 3, 2, 3, 4, 5,
+    6, 5, 4, 3, 2, 3, 4, 5, 6, 6,
+    5, 4, 3, 2, 1, 2, 3, 4, 5, 6,
+    5, 4, 3, 2, 3, 4, 5, 6, 5, 4,
+    3, 2, 1, 0, 1, 2, 3, 2, 1, 0,
+    0, 0,
+  ];
+  for (let col = 0; col < WEEKS; col++) {
+    const h = peaks[col];
+    if (h === 0) continue;
+    const top = DAYS - 1 - (h - 1);
+    for (let r = top; r < DAYS; r++) {
+      if (r === top && h >= 5) grid[col * DAYS + r] = LOW;
+      else if (r === top) grid[col * DAYS + r] = MID;
+      else grid[col * DAYS + r] = HIGH;
+    }
+  }
+  return grid;
+}
+
+function buildCoffeeCup(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "..S.S.S...",
+    ".S.S.S.S..",
+    "XXXXXXXX..",
+    "X......XXX",
+    "X......X.X",
+    "X......XXX",
+    ".XXXXXX...",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "S") grid[gc * DAYS + r] = 1;
+    }
+  }
+  return grid;
+}
+
+function buildChristmasTree(): number[] {
+  const grid = blankGrid();
+  const sprite = [
+    "....S....",
+    "...XXX...",
+    "..XOXOX..",
+    ".XXXXXXX.",
+    "XXOXXXOXX",
+    "....T....",
+    "...TTT...",
+  ];
+  const colOffset = Math.floor((WEEKS - sprite[0].length) / 2);
+  for (let r = 0; r < sprite.length; r++) {
+    for (let c = 0; c < sprite[r].length; c++) {
+      const ch = sprite[r][c];
+      if (ch === ".") continue;
+      const gc = colOffset + c;
+      if (gc < 0 || gc >= WEEKS) continue;
+      if (ch === "X") grid[gc * DAYS + r] = HIGH;
+      else if (ch === "O") grid[gc * DAYS + r] = LOW;
+      else if (ch === "T") grid[gc * DAYS + r] = MID;
+      else if (ch === "S") grid[gc * DAYS + r] = 1;
+    }
+  }
+  return grid;
+}
+
+function buildHeartBeat(): number[] {
+  const grid = blankGrid();
+  const baseRow = 3;
+  for (let col = 0; col < WEEKS; col++) {
+    grid[col * DAYS + baseRow] = LOW;
+  }
+  const beats = [8, 24, 40];
+  for (const b of beats) {
+    if (b + 7 >= WEEKS) continue;
+    grid[(b + 0) * DAYS + 2] = MID;
+    grid[(b + 1) * DAYS + baseRow] = LOW;
+    grid[(b + 2) * DAYS + 5] = HIGH;
+    grid[(b + 3) * DAYS + 0] = HIGH;
+    grid[(b + 4) * DAYS + 6] = HIGH;
+    grid[(b + 5) * DAYS + baseRow] = LOW;
+    grid[(b + 6) * DAYS + 2] = MID;
+    grid[(b + 7) * DAYS + baseRow] = LOW;
+  }
+  return grid;
+}
+
+function buildSnakeGame(): number[] {
+  const grid = blankGrid();
+  const path: Array<[number, number]> = [];
+  for (let c = 2; c <= 16; c++) path.push([c, 1]);
+  for (let r = 1; r <= 5; r++) path.push([16, r]);
+  for (let c = 16; c >= 6; c--) path.push([c, 5]);
+  for (let r = 5; r >= 3; r--) path.push([6, r]);
+  for (let c = 6; c <= 40; c++) path.push([c, 3]);
+  for (let r = 3; r <= 6; r++) path.push([40, r]);
+  for (let c = 40; c <= 48; c++) path.push([c, 6]);
+  for (const [c, r] of path) grid[c * DAYS + r] = HIGH;
+  grid[48 * DAYS + 6] = MID;
+  grid[2 * DAYS + 1] = MID;
+  const food: Array<[number, number]> = [
+    [25, 0], [44, 2], [30, 5], [12, 4], [38, 1], [20, 6],
+  ];
+  for (const [c, r] of food) {
+    if (grid[c * DAYS + r] === 0) grid[c * DAYS + r] = LOW;
+  }
+  return grid;
+}
+
+function buildFireworks(): number[] {
+  const grid = blankGrid();
+  const burst = [
+    "..X..",
+    "X.X.X",
+    ".XXX.",
+    "XX.XX",
+    ".XXX.",
+    "X.X.X",
+    "..X..",
+  ];
+  const centers = [8, 26, 44];
+  for (const center of centers) {
+    const colOffset = center - 2;
+    for (let r = 0; r < burst.length; r++) {
+      for (let c = 0; c < burst[r].length; c++) {
+        if (burst[r][c] !== "X") continue;
+        const gc = colOffset + c;
+        if (gc < 0 || gc >= WEEKS) continue;
+        grid[gc * DAYS + r] = HIGH;
+      }
+    }
+    grid[center * DAYS + 3] = MID;
+  }
+  const sparks: Array<[number, number]> = [
+    [3, 6], [16, 0], [21, 6], [32, 0], [38, 6], [49, 0],
+  ];
+  for (const [c, r] of sparks) {
+    if (grid[c * DAYS + r] === 0) grid[c * DAYS + r] = LOW;
+  }
+  return grid;
+}
+
+function buildFireFlames(): number[] {
+  const grid = blankGrid();
+  const heights = [
+    2, 3, 4, 3, 5, 6, 5, 4, 3, 4,
+    5, 6, 5, 4, 3, 2, 3, 4, 5, 6,
+    5, 4, 3, 4, 5, 6, 5, 4, 3, 5,
+    6, 5, 4, 3, 2, 3, 4, 5, 6, 5,
+    4, 3, 4, 5, 6, 5, 4, 3, 2, 3,
+    4, 3,
+  ];
+  for (let col = 0; col < WEEKS; col++) {
+    const h = heights[col];
+    for (let depth = 0; depth < h; depth++) {
+      const r = DAYS - 1 - depth;
+      if (r < 0) break;
+      let intensity: number;
+      if (depth <= 1) intensity = HIGH;
+      else if (depth === 2) intensity = MID;
+      else if (depth === 3) intensity = LOW;
+      else intensity = 1;
+      grid[col * DAYS + r] = intensity;
+    }
+  }
+  return grid;
+}
+
 export const TEMPLATE_LIBRARY: Template[] = [
+  { id: "stonks", name: "Stonks", grid: buildStonks() },
+  { id: "nyan-trail", name: "Nyan Trail", grid: buildNyanTrail() },
+  { id: "crewmate", name: "Crewmate", grid: buildCrewmate() },
+  { id: "wordle", name: "Wordle", grid: buildWordle() },
+  { id: "the-x", name: "The X", grid: buildTheX() },
+  { id: "qr-code", name: "QR Code", grid: buildQRCode() },
+  { id: "matrix-rain", name: "Matrix Rain", grid: buildMatrixRain() },
+  { id: "rocket-launch", name: "Rocket Launch", grid: buildRocketLaunch() },
+  { id: "barcode", name: "Barcode", grid: buildBarcode() },
+  { id: "lightning-bolt", name: "Lightning Bolt", grid: buildLightningBolt() },
+  { id: "mountain-range", name: "Mountain Range", grid: buildMountainRange() },
+  { id: "coffee-cup", name: "Coffee Cup", grid: buildCoffeeCup() },
+  { id: "christmas-tree", name: "Christmas Tree", grid: buildChristmasTree() },
+  { id: "heart-beat", name: "Heart Beat", grid: buildHeartBeat() },
+  { id: "snake-game", name: "Snake Game", grid: buildSnakeGame() },
+  { id: "fireworks", name: "Fireworks", grid: buildFireworks() },
+  { id: "fire-flames", name: "Fire Flames", grid: buildFireFlames() },
   { id: "pac-man-chase", name: "Pac-Man Chase", grid: buildPacManChase() },
   { id: "dino-run", name: "Dino Run", grid: buildDinoRun() },
   { id: "tetris-drop", name: "Tetris Drop", grid: buildTetrisDrop() },
