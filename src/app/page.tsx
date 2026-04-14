@@ -18,7 +18,12 @@ import {
   renderEmojiToGrid,
   type ShapeKind,
 } from "@/lib/shapeEngine";
-import { processImageToGrid } from "@/lib/imageProcessor";
+import {
+  loadImageFromFile,
+  processImageSource,
+  DEFAULT_IMAGE_OPTIONS,
+  type ImageFit,
+} from "@/lib/imageProcessor";
 import TemplateGallery from "@/components/TemplateGallery";
 import CustomDropdown from "@/components/CustomDropdown";
 
@@ -125,6 +130,13 @@ export default function Home() {
   const [isDropping, setIsDropping] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   const [isProcessingImage, setIsProcessingImage] = useState(false);
+  const [imageSource, setImageSource] = useState<HTMLImageElement | null>(null);
+  const [imageFit, setImageFit] = useState<ImageFit>(DEFAULT_IMAGE_OPTIONS.fit);
+  const [imageInvert, setImageInvert] = useState<boolean>(DEFAULT_IMAGE_OPTIONS.invert);
+  const [imageBrightness, setImageBrightness] = useState<number>(DEFAULT_IMAGE_OPTIONS.brightness);
+  const [imageContrast, setImageContrast] = useState<number>(DEFAULT_IMAGE_OPTIONS.contrast);
+  const [imageDither, setImageDither] = useState<boolean>(DEFAULT_IMAGE_OPTIONS.dither);
+  const [imageThreshold, setImageThreshold] = useState<number>(DEFAULT_IMAGE_OPTIONS.threshold);
 
   const canvasFrameRef = useRef<HTMLDivElement>(null);
   const gridInnerRef = useRef<HTMLDivElement>(null);
@@ -317,8 +329,8 @@ export default function Home() {
     setImageError(null);
     setIsProcessingImage(true);
     try {
-      const result = await processImageToGrid(file);
-      setGrid(result);
+      const img = await loadImageFromFile(file);
+      setImageSource(img);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setImageError(message);
@@ -326,6 +338,41 @@ export default function Home() {
       setIsProcessingImage(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!imageSource) return;
+    try {
+      const grid = processImageSource(imageSource, {
+        fit: imageFit,
+        invert: imageInvert,
+        brightness: imageBrightness,
+        contrast: imageContrast,
+        dither: imageDither,
+        threshold: imageThreshold,
+      });
+      setGrid(grid);
+      setImageError(null);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "Unknown error");
+    }
+  }, [
+    imageSource,
+    imageFit,
+    imageInvert,
+    imageBrightness,
+    imageContrast,
+    imageDither,
+    imageThreshold,
+  ]);
+
+  const resetImageDefaults = () => {
+    setImageFit(DEFAULT_IMAGE_OPTIONS.fit);
+    setImageInvert(DEFAULT_IMAGE_OPTIONS.invert);
+    setImageBrightness(DEFAULT_IMAGE_OPTIONS.brightness);
+    setImageContrast(DEFAULT_IMAGE_OPTIONS.contrast);
+    setImageDither(DEFAULT_IMAGE_OPTIONS.dither);
+    setImageThreshold(DEFAULT_IMAGE_OPTIONS.threshold);
+  };
 
   const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -1259,9 +1306,20 @@ export default function Home() {
                 <h3 className="text-sm font-semibold text-zinc-100">
                   Image Upload
                 </h3>
+                <button
+                  type="button"
+                  onClick={resetImageDefaults}
+                  title="Reset to defaults"
+                  className="ml-auto text-zinc-500 transition hover:text-zinc-200"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="1 4 1 10 7 10" />
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                  </svg>
+                </button>
               </div>
               <p className="text-[11px] leading-snug text-zinc-500">
-                Drop any image — downscaled to 52×7 grayscale.
+                Drop any image — pyramid-resized with dithering.
               </p>
               <div
                 onDragEnter={handleDragEnter}
@@ -1308,6 +1366,105 @@ export default function Home() {
               </div>
               {imageError && (
                 <p className="text-[10px] text-red-400">{imageError}</p>
+              )}
+
+              <div className="flex items-center rounded-lg border border-white/10 bg-zinc-950/60 p-0.5">
+                {(["cover", "contain", "stretch"] as const).map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setImageFit(f)}
+                    disabled={!imageSource}
+                    aria-pressed={imageFit === f}
+                    title={`Fit · ${f}`}
+                    className={`flex-1 rounded-md py-1 text-[10px] font-semibold uppercase tracking-wider transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                      imageFit === f
+                        ? "bg-white/10 text-zinc-50"
+                        : "text-zinc-500 hover:text-zinc-200"
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setImageInvert((v) => !v)}
+                  disabled={!imageSource}
+                  aria-pressed={imageInvert}
+                  title="Invert lightness"
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                    imageInvert
+                      ? "border-sky-400/60 bg-sky-500/15 text-sky-200"
+                      : "border-white/10 bg-zinc-950/60 text-zinc-500 hover:border-white/30 hover:text-zinc-200"
+                  }`}
+                >
+                  <span className={`h-2 w-2 rounded-full ${imageInvert ? "bg-sky-400" : "bg-zinc-600"}`} />
+                  Invert
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setImageDither((v) => !v)}
+                  disabled={!imageSource}
+                  aria-pressed={imageDither}
+                  title="Floyd-Steinberg dithering"
+                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                    imageDither
+                      ? "border-sky-400/60 bg-sky-500/15 text-sky-200"
+                      : "border-white/10 bg-zinc-950/60 text-zinc-500 hover:border-white/30 hover:text-zinc-200"
+                  }`}
+                >
+                  <span className={`h-2 w-2 rounded-full ${imageDither ? "bg-sky-400" : "bg-zinc-600"}`} />
+                  Dither
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-x-2 gap-y-1.5">
+                {(
+                  [
+                    ["Bright", imageBrightness, setImageBrightness, -100, 100, ""],
+                    ["Contrast", imageContrast, setImageContrast, 0, 200, "%"],
+                    ["Thresh", imageThreshold, setImageThreshold, 0, 100, ""],
+                  ] as Array<[
+                    string,
+                    number,
+                    (n: number) => void,
+                    number,
+                    number,
+                    string
+                  ]>
+                ).map(([label, value, setter, min, max, unit]) => (
+                  <div key={label} className="flex flex-col">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                        {label}
+                      </label>
+                      <span className="font-mono text-[10px] text-zinc-400">
+                        {value}
+                        {unit}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={min}
+                      max={max}
+                      step={1}
+                      value={value}
+                      disabled={!imageSource}
+                      onChange={(e) => setter(Number(e.target.value))}
+                      className="w-full cursor-pointer accent-sky-400 disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label={label}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {!imageSource && (
+                <p className="text-[10px] text-zinc-600">
+                  Drop an image to enable these controls.
+                </p>
               )}
             </section>
           </aside>
