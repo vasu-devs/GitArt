@@ -12,7 +12,7 @@ import {
 } from "react";
 import { generateHeatmapRepo, type HeatmapCell } from "@/lib/gitEngine";
 import { CopyableCode, Modal } from "@/components/Modal";
-import { renderTextToGrid } from "@/lib/fontMatrix";
+import { renderDynamicTextToGrid } from "@/lib/dynamicTextEngine";
 import { processImageToGrid } from "@/lib/imageProcessor";
 import TemplateGallery from "@/components/TemplateGallery";
 import CustomDropdown from "@/components/CustomDropdown";
@@ -91,6 +91,10 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [textInput, setTextInput] = useState("");
+  const [fontFamily, setFontFamily] = useState<string>("sans-serif");
+  const [fontSize, setFontSize] = useState<number>(8);
+  const [letterSpacing, setLetterSpacing] = useState<number>(1);
+  const [yOffset, setYOffset] = useState<number>(6);
   const [year, setYear] = useState<number>(DEFAULT_YEAR);
   const [gridDims, setGridDims] = useState<{ scale: number; height: number }>({
     scale: 1,
@@ -170,7 +174,15 @@ export default function Home() {
       const next = prev.slice();
       const intensity =
         tool === "eraser" ? 4 : brushLevel === 0 ? 4 : brushLevel;
-      renderTextToGrid(value, intensity, next);
+      renderDynamicTextToGrid(
+        value,
+        fontFamily,
+        fontSize,
+        letterSpacing,
+        yOffset,
+        intensity,
+        next
+      );
       return next;
     });
   };
@@ -450,17 +462,94 @@ export default function Home() {
                 </h3>
               </div>
               <p className="text-[11px] leading-relaxed text-zinc-500">
-                Pixel-prints uppercase letters &amp; digits onto the canvas at
-                the active brush intensity.
+                Renders any text through a dynamic canvas engine. Tune the
+                font, size, spacing &amp; vertical shift.
               </p>
               <input
                 type="text"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
-                placeholder="HELLO 2026"
-                maxLength={8}
+                placeholder="Hello 2026"
+                maxLength={16}
                 className="rounded-lg border border-white/10 bg-zinc-950/60 px-3 py-2 text-sm tracking-wider text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-emerald-400/60"
               />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                  Font Family
+                </label>
+                <CustomDropdown<string>
+                  value={fontFamily}
+                  onChange={(next) => setFontFamily(next)}
+                  ariaLabel="Font family"
+                  options={[
+                    { label: "Sans-Serif", value: "sans-serif" },
+                    { label: "Serif", value: "serif" },
+                    { label: "Monospace", value: "monospace" },
+                    { label: "Impact", value: "Impact" },
+                    { label: "Comic Sans MS", value: "Comic Sans MS" },
+                  ]}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Font Size
+                  </label>
+                  <span className="font-mono text-[10px] text-zinc-400">
+                    {fontSize}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={6}
+                  max={14}
+                  step={1}
+                  value={fontSize}
+                  onChange={(e) => setFontSize(Number(e.target.value))}
+                  className="w-full cursor-pointer accent-emerald-400"
+                  aria-label="Font size"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Letter Spacing
+                  </label>
+                  <span className="font-mono text-[10px] text-zinc-400">
+                    {letterSpacing}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={5}
+                  step={1}
+                  value={letterSpacing}
+                  onChange={(e) => setLetterSpacing(Number(e.target.value))}
+                  className="w-full cursor-pointer accent-emerald-400"
+                  aria-label="Letter spacing"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+                    Vertical Shift
+                  </label>
+                  <span className="font-mono text-[10px] text-zinc-400">
+                    {yOffset}px
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={-2}
+                  max={10}
+                  step={1}
+                  value={yOffset}
+                  onChange={(e) => setYOffset(Number(e.target.value))}
+                  className="w-full cursor-pointer accent-emerald-400"
+                  aria-label="Vertical shift"
+                />
+              </div>
               <button
                 onClick={handleRenderText}
                 disabled={!textInput.trim()}
